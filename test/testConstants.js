@@ -28,6 +28,7 @@ const CONSTANTS = {
       ID: "",  
       name: "Company 1",
       wallet: "",
+      admins: [],
       contractInstances: [], 
     },
     zeroAddr: "0x0000000000000000000000000000000000000000",
