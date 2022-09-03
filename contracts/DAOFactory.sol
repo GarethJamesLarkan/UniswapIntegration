@@ -38,8 +38,7 @@ contract DAOFactory {
     //----------------------------------------------------- SETTER FUNCTIONS ----------------------------------------------------------
     //---------------------------------------------------------------------------------------------------------------------------------
 
-    function setCompanyWallet(uint256 _companyID, address _newWalletAddress) external isCompany(_companyID) {
-        require(_newWalletAddress != address(0), "Cannot be zero address");
+    function setCompanyWallet(uint256 _companyID, address _newWalletAddress) external isCompany(_companyID) isZeroAddress(_newWalletAddress) {
         require(isCompanyAdmin(_companyID, msg.sender), "Not company admin");
 
         address oldWallet = companies[_companyID].wallet;
@@ -67,9 +66,7 @@ contract DAOFactory {
     //------------------------------------------------- STATE MODIFYING FUNCTIONS -----------------------------------------------------
     //---------------------------------------------------------------------------------------------------------------------------------
 
-    function addAdmin(uint256 _companyID, address _newAdmin) external isCompany(_companyID) {
-        require(_newAdmin != address(0), "Cannot add address zero");
-
+    function addAdmin(uint256 _companyID, address _newAdmin) external isCompany(_companyID) isZeroAddress(_newAdmin) {
         companies[_companyID].admins.push(_newAdmin);
 
         emit AddedCompanyAdmin(_companyID, _newAdmin);
@@ -82,8 +79,13 @@ contract DAOFactory {
     //---------------------------------------------------------- MODIFIERS ------------------------------------------------------------
     //---------------------------------------------------------------------------------------------------------------------------------
 
-    modifier isCompany(uint256 _companyID){
+    modifier isCompany(uint256 _companyID) {
         require(_companyID <= companyNumber, "Non-existant company ID");
+        _;
+    }
+
+    modifier isZeroAddress(address _address) {
+        require(_address != address(0), "Cannot be zero-address");
         _;
     }
 
