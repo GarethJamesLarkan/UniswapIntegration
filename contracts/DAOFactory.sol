@@ -1,10 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
+import "./NFTERC721A.sol";
+
 contract DAOFactory {
 
     struct Company {
         uint256 ID;
+        uint256 numberNFTsSold;
+        uint256 totalValueSold;
         string name;
         address wallet;
         address[] admins;
@@ -14,6 +18,7 @@ contract DAOFactory {
     uint256 public companyNumber = 1;
 
     mapping(uint256 => Company) public companies;
+    mapping(uint256 => address) companyToNFTAddress;
 
     event CompanyCreated(uint256 companyID, string name, address wallet);
     event UpdatedCompanyWallet(uint256 companyID, address oldAddress, address newAddress);
@@ -23,15 +28,45 @@ contract DAOFactory {
     //----------------------------------------------------- CREATE FUNCTIONS ----------------------------------------------------------
     //---------------------------------------------------------------------------------------------------------------------------------
 
-    function createCompany(Company memory company) external {
-        require(company.wallet != address(0), "Cannot be zero-address");
+    function createCompany(Company memory company) external isZeroAddress(company.wallet) {
         
-        company.ID = companyNumber;
         companies[companyNumber] = company;
         companies[companyNumber].admins.push(msg.sender);
         companyNumber++;
 
         emit CompanyCreated(company.ID, company.name, company.wallet);
+    }
+
+    function createERC721AInstance(
+        uint256 _companyID,
+        uint256 _maxSupply, 
+        uint256 _maxPerWallet, 
+        uint256 _nftPrice, 
+        string memory _tokenName, 
+        string memory _tokenSymbol, 
+        string memory _baseUri,
+        address _mintingRecipient, 
+        address _daoFactoryAddress) external isZeroAddress(_mintingRecipient) isZeroAddress(_daoFactoryAddress) {
+
+            require(isCompanyAdmin(_companyID, msg.sender), "Not company admin");
+            require(_maxPerWallet < _maxSupply, "Max per wallet to high");
+
+            NFTERC721A nftInstance = new NFTERC721A(
+                _maxSupply, 
+                _maxPerWallet, 
+                _nftPrice,
+                _tokenName, 
+                _tokenSymbol, 
+                _baseUri,
+                _mintingRecipient, 
+                _daoFactoryAddress
+            );
+
+            address nftInstanceAddress = address(nftInstance);
+
+            companies[_companyID].contractInstances.push(nftInstanceAddress);
+            companyToNFTAddress[_companyID] = nftInstanceAddress;         
+
     }
 
     //---------------------------------------------------------------------------------------------------------------------------------
@@ -73,8 +108,26 @@ contract DAOFactory {
 
     }
 
+    function addCompanyNFTsSold(uint256 _companyID, uint256 _quantity) external {
+        companies[_companyID].numberNFTsSold += _quantity;
+    }
+
+    function addTotalRevueToCompany(uint256 _companyID, uint256 _price) external {
+        companies[_companyID].totalValueSold += _price;
+    }
+
     //Need to add remove admin function
     
+    //---------------------------------------------------------------------------------------------------------------------------------
+    //---------------------------------------------------------- GETTERS  -------------------------------------------------------------
+    //---------------------------------------------------------------------------------------------------------------------------------
+
+    function getCompanyNFTContract(uint256 _companyID) external view returns(address) {
+        require(_companyID <= companyNumber, "Non-existant company ID");
+
+        return companyToNFTAddress[_companyID];
+    }
+
     //---------------------------------------------------------------------------------------------------------------------------------
     //---------------------------------------------------------- MODIFIERS ------------------------------------------------------------
     //---------------------------------------------------------------------------------------------------------------------------------
