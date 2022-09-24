@@ -7,7 +7,7 @@ const DAI_WHALE = "0x2FAF487A4414Fe77e2327F0bf4AE2a264a776AD2"
 const USDC_WHALE = "0x2FAF487A4414Fe77e2327F0bf4AE2a264a776AD2"
 
 describe("UniswapRouter", () => {
-  let UniswapRouter, Game, GameInstance, mockToken, mockInstance, accounts, dai, usdc, UniswapRouterInstance;
+  let UniswapRouter, GuessGame, GuessGameInstance, mockToken, mockInstance, accounts, dai, usdc, UniswapRouterInstance;
 
   before(async () => {
     accounts = await ethers.getSigners(1)
@@ -20,9 +20,9 @@ describe("UniswapRouter", () => {
     mockInstance = await mockToken.deploy()
     await mockInstance.deployed()
     
-    Game = await ethers.getContractFactory("GameContract")
-    GameInstance = await Game.deploy(UniswapRouterInstance.address, mockInstance.address)
-    await GameInstance.deployed()
+    GuessGame = await ethers.getContractFactory("GuessGameContract")
+    GuessGameInstance = await Game.deploy(UniswapRouterInstance.address, mockInstance.address)
+    await GuessGameInstance.deployed()
 
     dai = await ethers.getContractAt("IERC20", DAI)
     usdc = await ethers.getContractAt("IERC20", USDC)
@@ -53,11 +53,11 @@ describe("UniswapRouter", () => {
 
   it.only("createsGame", async () => {
 
-    await mockInstance.connect(accounts[0]).approve(GameInstance.address, 1000);
-    console.log(await mockInstance.balanceOf(GameInstance.address));
-    await GameInstance.connect(accounts[0]).createGame(DAI, 550, 100, 300);
+    await mockInstance.connect(accounts[0]).approve(GuessGameInstance.address, 1000);
+    console.log(await mockInstance.balanceOf(GuessGameInstance.address));
+    await GuessGameInstance.connect(accounts[0]).createGame(DAI, 550, 100, 300);
 
-    expect(await GameInstance.connect(accounts[0].gameInstance())).to.be.equal(2)
+    expect(await GuessGameInstance.connect(accounts[0].GuessGameInstance())).to.be.equal(2)
   })
 
   it.skip("increaseLiquidityCurrentRange", async () => {

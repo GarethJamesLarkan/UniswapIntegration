@@ -6,7 +6,7 @@ import "./Interfaces/IMockToken.sol";
 import "./Interfaces/IUniswapRouter.sol";
 import "hardhat/console.sol";
 
-contract GameContract {
+contract GuessGameContract {
     address public tokenAddress;
     address public uniswapRouterAddress;
 
