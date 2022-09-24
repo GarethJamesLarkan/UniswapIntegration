@@ -13,7 +13,7 @@
   "dependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.4",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
-    "@openzeppelin/contracts": "^4.7.3",
+    "@openzeppelin/contracts": "3.4.2",
     "@primitivefi/hardhat-dodoc": "^0.1.3",
     "@typechain/ethers-v5": "^9.0.0",
     "@types/chai": "^4.2.21",
@@ -22,6 +22,8 @@
     "@types/mocha": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^4.29.1",
     "@typescript-eslint/parser": "^4.29.1",
+    "@uniswap/v3-core": "^1.0.1",
+    "@uniswap/v3-periphery": "^1.4.2",
     "chai": "^4.2.0",
     "chalk": "^4.1.0",
     "cli-progress": "^3.9.0",
